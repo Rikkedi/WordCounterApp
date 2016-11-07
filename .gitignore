@@ -3,3 +3,9 @@
 ################################################################################
 
 *.suo
+/packages
+/TestResults
+/WordCountGenerator/bin/Debug
+/WordCountGenerator/obj/Debug
+/WordCountTests/bin/Debug
+/WordCountTests/obj/Debug
