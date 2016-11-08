@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WordCountGenerator
 {
     public class FileDiscoverer
     {
+        private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
+
+        public ConcurrentDictionary<int, int> FileCountsByWordCount { get; private set; }
 
         public FileDiscoverer(String path)
         {
@@ -21,45 +24,60 @@ namespace WordCountGenerator
 
             try
             {
-                rootDirectory = new DirectoryInfo(path);
+                this.rootDirectory = new DirectoryInfo(path);
             }
             catch (SecurityException se)
             {
                 Console.WriteLine("User does not have permission to access {0}", path);
-                throw;
+                throw se;
             }
             catch (ArgumentException ae)
             {
                 Console.WriteLine("Path contains invalid characters");
-                throw;
+                throw ae;
             }
             catch (PathTooLongException ptle)
             {
-                Console.WriteLine("Input path too long, aborting.");
-                rootDirectory = null;
+                Console.WriteLine("Input path too long.");
+                throw ptle;
             }
+
+            this.FileCountsByWordCount = new ConcurrentDictionary<int, int>();
         }
 
-        private static IEnumerable<FileInfo> GetFileEnumeratorForDirectory(DirectoryInfo directory)
+        private async Task DiscoverFilesToProcess(DirectoryInfo directory)
         {
-            return FileDiscoverer.GetFileEnumeratorByExtension(directory, "*.*");
-        }
-
-        private static IEnumerable<FileInfo> GetFileEnumeratorByExtension(DirectoryInfo directory, String extension)
-        {
-            if (directory == null || !directory.Exists || String.IsNullOrEmpty(extension))
+            if (directory == null || !directory.Exists)
             {
-                return null;
+                return;
             }
-
-            String loweredExtension = extension.ToLower();
-
-            IEnumerable<FileInfo> files = null;
 
             try
             {
-                files = directory.EnumerateFiles().Where<FileInfo>(f => f.Extension.ToLower().Equals(loweredExtension));
+                // Start with the files in the base directory
+                this.concurrentFileQueue = new ConcurrentQueue<FileInfo>(directory.EnumerateFiles());
 
+                // Explore any subdirectories
+                IEnumerable<DirectoryInfo> subdirs = directory.EnumerateDirectories();
+                Queue<DirectoryInfo> subDirectoriesToExplore = new Queue<DirectoryInfo>(subdirs);
+
+                while (subDirectoriesToExplore.Count > 0)
+                {
+                    DirectoryInfo currentDirectory = subDirectoriesToExplore.Dequeue();
+
+                    await Task.Run(() =>
+                    {
+                        Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
+                        {
+                            this.concurrentFileQueue.Enqueue(currentFile);
+                        });
+
+                        foreach (DirectoryInfo subDir in currentDirectory.EnumerateDirectories())
+                        {
+                            subDirectoriesToExplore.Enqueue(subDir);
+                        }
+                    });
+                }
             }
             catch (SecurityException se)
             {
@@ -70,8 +88,27 @@ namespace WordCountGenerator
             {
                 Console.WriteLine(dnfe.Message);
             }
+        }
 
-            return files;
+        private async Task ProcessFiles()
+        {
+            if (this.concurrentFileQueue == null)
+            {
+                return;
+            }
+
+            while (!this.concurrentFileQueue.IsEmpty)
+            {
+                FileInfo currentFile;
+                if (this.concurrentFileQueue.TryDequeue(out currentFile))
+                {
+                    await FileHandlerTaskFactory.ProcessFile(currentFile, this.FileCountsByWordCount);
+                }
+                else
+                {
+                    await Task.Run(() => Thread.Sleep(100)); 
+                }
+            }
         }
     }
 }
