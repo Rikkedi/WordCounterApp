@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArchiveFileHandlerTests.cs" />
+    <Compile Include="FileHandlerTaskFactoryTests.cs" />
     <Compile Include="FileStreamHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
