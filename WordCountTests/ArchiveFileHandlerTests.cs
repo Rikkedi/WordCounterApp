@@ -2,10 +2,11 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WordCountGenerator;
 
-namespace WordCountGenerator.Tests
+namespace ArchiveFileHandlerTests
 {
-    [TestClass()]
+    [TestClass]
     public class ArchiveFileHandlerTests
     {
         [TestMethod]

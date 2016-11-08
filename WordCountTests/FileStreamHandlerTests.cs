@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordCountGenerator;
 
-namespace WordCountTests
+namespace FileStreamHandlerTests
 {
     [TestClass]
     public class FileStreamHandlerTests
