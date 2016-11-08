@@ -45,9 +45,9 @@ namespace WordCountGenerator
             this.FileCountsByWordCount = new ConcurrentDictionary<int, int>();
         }
 
-        private async Task DiscoverFilesToProcess(DirectoryInfo directory)
+        public async Task DiscoverFilesToProcess()
         {
-            if (directory == null || !directory.Exists)
+            if (this.rootDirectory == null || !this.rootDirectory.Exists)
             {
                 return;
             }
@@ -55,10 +55,10 @@ namespace WordCountGenerator
             try
             {
                 // Start with the files in the base directory
-                this.concurrentFileQueue = new ConcurrentQueue<FileInfo>(directory.EnumerateFiles());
+                this.concurrentFileQueue = new ConcurrentQueue<FileInfo>(this.rootDirectory.EnumerateFiles());
 
                 // Explore any subdirectories
-                IEnumerable<DirectoryInfo> subdirs = directory.EnumerateDirectories();
+                IEnumerable<DirectoryInfo> subdirs = this.rootDirectory.EnumerateDirectories();
                 Queue<DirectoryInfo> subDirectoriesToExplore = new Queue<DirectoryInfo>(subdirs);
 
                 while (subDirectoriesToExplore.Count > 0)
@@ -90,7 +90,7 @@ namespace WordCountGenerator
             }
         }
 
-        private async Task ProcessFiles()
+        public async Task ProcessFiles()
         {
             if (this.concurrentFileQueue == null)
             {
