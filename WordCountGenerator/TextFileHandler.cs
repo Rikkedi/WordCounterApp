@@ -9,6 +9,11 @@ namespace WordCountGenerator
         public static String TextFileExtension = @".txt";
         private static char[] StringSeparators = { ' ' };
 
+        public static bool IsTextFile(string file)
+        {
+            return file.EndsWith(TextFileHandler.TextFileExtension);
+        }
+
         public static async Task<long> GetWordCount(FileInfo file)
         {
             if (file == null)
@@ -21,13 +26,13 @@ namespace WordCountGenerator
                 throw new FileNotFoundException("File {0} does not exist", file.Name);
             }
 
-            if (file.Extension != TextFileHandler.TextFileExtension)
+            if (!TextFileHandler.IsTextFile(file.Name))
             {
                 throw new ArgumentException(
                     String.Format(
-                        "File {0} is not a known archive type ({1})",
+                        "File {0} is not a known Text File type ({1})",
                         file.Name,
-                        ArchiveFileHandler.ArchiveExtension));
+                        TextFileHandler.TextFileExtension));
             }
 
             using (FileStream fs = file.OpenRead())

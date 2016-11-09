@@ -27,7 +27,7 @@ namespace WordCountGenerator
                 return;
             }
 
-            if (fileToProcess.Extension.Equals(TextFileHandler.TextFileExtension))
+            if (TextFileHandler.IsTextFile(fileToProcess.Extension))
             {
                 long wordCount = await TextFileHandler.GetWordCount(fileToProcess);
 
@@ -40,7 +40,7 @@ namespace WordCountGenerator
                     wordCounts.TryAdd(wordCount, 1);
                 }
             }
-            else if (fileToProcess.Extension.Equals(ArchiveFileHandler.ArchiveExtension))
+            else if (ArchiveFileHandler.IsArchiveFile(fileToProcess.Extension))
             {
                 List<long> archiveWordCounts = (List<long>) await ArchiveFileHandler.GetWordCount(fileToProcess);
 

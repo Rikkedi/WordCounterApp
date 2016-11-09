@@ -10,6 +10,11 @@ namespace WordCountGenerator
     {
         public static String ArchiveExtension = @".zip";
 
+        public static bool IsArchiveFile(String file)
+        {
+            return file.EndsWith(ArchiveFileHandler.ArchiveExtension);
+        }
+
         public static async Task<IEnumerable<long>> GetWordCount(FileInfo fi)
         {
             if (fi == null)
@@ -21,30 +26,53 @@ namespace WordCountGenerator
             {
                 throw new FileNotFoundException(fi.Name);
             }
-            
-            if (fi.Extension != ArchiveFileHandler.ArchiveExtension)
+
+            if (!ArchiveFileHandler.IsArchiveFile(fi.Name))
             {
                 throw new ArgumentException(
                     String.Format(
-                        "File {0} is not a known archive type ({1})", 
-                        fi.Name, 
+                        "File {0} is not a known archive type ({1})",
+                        fi.Name,
                         ArchiveFileHandler.ArchiveExtension));
             }
 
             List<long> wordCounts = new List<long>();
+            await ProcessArchive(fi, wordCounts);
+
+            return wordCounts;
+        }
+
+        private static async Task ProcessArchive(FileInfo fi, List<Int64> wordCounts)
+        {
+            if (wordCounts == null)
+            {
+                throw new ArgumentNullException("wordCounts");
+            }
 
             using (ZipArchive archive = ZipFile.OpenRead(fi.FullName))
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                Queue<ZipArchiveEntry> filesToProcess = new Queue<ZipArchiveEntry>(archive.Entries);
+
+                while (filesToProcess.Count > 0)
                 {
-                    if (entry.Name.EndsWith(TextFileHandler.TextFileExtension))
+                    ZipArchiveEntry entry = filesToProcess.Dequeue();
+
+                    if (TextFileHandler.IsTextFile(entry.Name))
                     {
                         wordCounts.Add(await TextFileHandler.GetWordCount(entry.Open()));
                     }
+                    else if (ArchiveFileHandler.IsArchiveFile(entry.Name))
+                    {
+                        Stream zipEntry = entry.Open();
+                        ZipArchive innerArchive = new ZipArchive(zipEntry, ZipArchiveMode.Read, false);
+
+                        foreach (ZipArchiveEntry innerFile in innerArchive.Entries)
+                        { 
+                            filesToProcess.Enqueue(innerFile);
+                        }
+                    }
                 }
             }
-
-            return wordCounts;
         }
     }
 }
