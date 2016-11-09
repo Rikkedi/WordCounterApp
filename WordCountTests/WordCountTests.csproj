@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArchiveFileHandlerTests.cs" />
+    <Compile Include="FileDiscovererTests.cs" />
     <Compile Include="FileHandlerTaskFactoryTests.cs" />
     <Compile Include="FileStreamHandlerTests.cs" />
     <Compile Include="FileWordCounts.cs" />
@@ -64,6 +65,7 @@
     <None Include="SampleInputFiles\LockeFiles.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SampleInputFiles\NestedArchives.zip" />
     <None Include="SampleInputFiles\NestedFiles.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
