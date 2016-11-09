@@ -13,7 +13,7 @@ namespace WordCountGenerator
         private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
 
-        public ConcurrentDictionary<int, int> FileCountsByWordCount { get; private set; }
+        public ConcurrentDictionary<long, int> FileCountsByWordCount { get; private set; }
 
         public FileDiscoverer(String path)
         {
@@ -42,7 +42,7 @@ namespace WordCountGenerator
                 throw ptle;
             }
 
-            this.FileCountsByWordCount = new ConcurrentDictionary<int, int>();
+            this.FileCountsByWordCount = new ConcurrentDictionary<long, int>();
         }
 
         public async Task DiscoverFilesToProcess()

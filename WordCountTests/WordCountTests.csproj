@@ -74,6 +74,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SampleInputFiles\FiveHundredWords_LineBreaks.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleInputFiles\FiveHundredWords_LongLines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleInputFiles\FiveWords.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SampleInputFiles\George Berkeley - Principles of Human Knowledge.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

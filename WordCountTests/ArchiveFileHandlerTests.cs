@@ -16,11 +16,11 @@ namespace ArchiveFileHandlerTests
             string inputFile = @".\BerkeleyFiles.zip";
 
             FileInfo fi = new FileInfo(inputFile);
-            List<int> counts = (List<int>) await ArchiveFileHandler.GetWordCount(fi);
+            List<long> counts = (List<long>) await ArchiveFileHandler.GetWordCount(fi);
 
             Assert.AreEqual(2, counts.Count);
-            Assert.IsTrue(counts.Contains(36600));
-            Assert.IsTrue(counts.Contains(36532));
+            Assert.IsTrue(counts.Contains(39737));
+            Assert.IsTrue(counts.Contains(39050));
         }
 
         [TestMethod]
@@ -30,11 +30,11 @@ namespace ArchiveFileHandlerTests
             string inputFile = @".\LockeFiles.zip";
 
             FileInfo fi = new FileInfo(inputFile);
-            List<int> counts = (List<int>)await ArchiveFileHandler.GetWordCount(fi);
+            List<long> counts = (List<long>)await ArchiveFileHandler.GetWordCount(fi);
 
             Assert.AreEqual(2, counts.Count);
-            Assert.IsTrue(counts.Contains(140548));
-            Assert.IsTrue(counts.Contains(117320));
+            Assert.IsTrue(counts.Contains(153053));
+            Assert.IsTrue(counts.Contains(127908));
         }
 
         [TestMethod]
@@ -44,17 +44,17 @@ namespace ArchiveFileHandlerTests
             string inputFile = @".\NestedFiles.zip";
 
             FileInfo fi = new FileInfo(inputFile);
-            List<int> counts = (List<int>)await ArchiveFileHandler.GetWordCount(fi);
+            List<long> counts = (List<long>)await ArchiveFileHandler.GetWordCount(fi);
 
             Assert.AreEqual(6, counts.Count);
-            Assert.IsTrue(counts.Contains(36600));
-            Assert.IsTrue(counts.Contains(36532));
+            Assert.IsTrue(counts.Contains(39737));
+            Assert.IsTrue(counts.Contains(39050));
 
-            Assert.IsTrue(counts.Contains(193392));
-            Assert.IsTrue(counts.Contains(183062));
+            Assert.IsTrue(counts.Contains(210484));
+            Assert.IsTrue(counts.Contains(192261));
 
-            Assert.IsTrue(counts.Contains(140548));
-            Assert.IsTrue(counts.Contains(117320));
+            Assert.IsTrue(counts.Contains(153053));
+            Assert.IsTrue(counts.Contains(127908));
         }
     }
 }

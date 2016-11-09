@@ -9,7 +9,7 @@ namespace WordCountGenerator
     public static class FileHandlerTaskFactory
     {
         // Must ensure file exists before invoking
-        public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<int, int> wordCounts)
+        public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<long, int> wordCounts)
         {
             if (fileToProcess == null)
             {
@@ -29,7 +29,7 @@ namespace WordCountGenerator
 
             if (fileToProcess.Extension.Equals(TextFileHandler.TextFileExtension))
             {
-                int wordCount = await TextFileHandler.GetWordCount(fileToProcess);
+                long wordCount = await TextFileHandler.GetWordCount(fileToProcess);
 
                 if (wordCounts.ContainsKey(wordCount))
                 {
@@ -42,7 +42,7 @@ namespace WordCountGenerator
             }
             else if (fileToProcess.Extension.Equals(ArchiveFileHandler.ArchiveExtension))
             {
-                List<int> archiveWordCounts = (List<int>) await ArchiveFileHandler.GetWordCount(fileToProcess);
+                List<long> archiveWordCounts = (List<long>) await ArchiveFileHandler.GetWordCount(fileToProcess);
 
                 foreach (int wordCount in archiveWordCounts)
                 {

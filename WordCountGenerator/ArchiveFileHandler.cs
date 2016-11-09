@@ -10,7 +10,7 @@ namespace WordCountGenerator
     {
         public static String ArchiveExtension = @".zip";
 
-        public static async Task<IEnumerable<int>> GetWordCount(FileInfo fi)
+        public static async Task<IEnumerable<long>> GetWordCount(FileInfo fi)
         {
             if (fi == null)
             {
@@ -31,7 +31,7 @@ namespace WordCountGenerator
                         ArchiveFileHandler.ArchiveExtension));
             }
 
-            List<int> wordCounts = new List<int>();
+            List<long> wordCounts = new List<long>();
 
             using (ZipArchive archive = ZipFile.OpenRead(fi.FullName))
             {

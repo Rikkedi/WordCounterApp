@@ -15,11 +15,11 @@ namespace FileHandlerTaskFactoryTests
         {
             string inputFile = @".\George Berkeley - Principles of Human Knowledge.txt";
 
-            ConcurrentDictionary<int, int> wordCounts = new ConcurrentDictionary<int, int>();
+            ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
-            Assert.AreEqual(1, wordCounts[36600]);
+            Assert.AreEqual(1, wordCounts[39737]);
         }
 
         [TestMethod]
@@ -28,13 +28,13 @@ namespace FileHandlerTaskFactoryTests
         {
             string inputFile = @".\George Berkeley - Three Dialogues.txt";
 
-            ConcurrentDictionary<int, int> wordCounts = new ConcurrentDictionary<int, int>();
-            wordCounts.TryAdd(36532, 2);
+            ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
+            wordCounts.TryAdd(39050, 2);
 
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
-            Assert.AreEqual(3, wordCounts[36532]);
+            Assert.AreEqual(3, wordCounts[39050]);
         }
 
         [TestMethod]
@@ -44,18 +44,18 @@ namespace FileHandlerTaskFactoryTests
             string inputFile = @".\NestedFiles.zip";
 
             FileInfo fi = new FileInfo(inputFile);
-            ConcurrentDictionary<int, int> wordCounts = new ConcurrentDictionary<int, int>();
+            ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(6, wordCounts.Count);
-            Assert.AreEqual(1, wordCounts[36600]);
-            Assert.AreEqual(1, wordCounts[36532]);
+            Assert.AreEqual(1, wordCounts[39737]);
+            Assert.AreEqual(1, wordCounts[39050]);
 
-            Assert.AreEqual(1, wordCounts[193392]);
-            Assert.AreEqual(1, wordCounts[183062]);
+            Assert.AreEqual(1, wordCounts[210484]);
+            Assert.AreEqual(1, wordCounts[192261]);
 
-            Assert.AreEqual(1, wordCounts[140548]);
-            Assert.AreEqual(1, wordCounts[117320]);
+            Assert.AreEqual(1, wordCounts[153053]);
+            Assert.AreEqual(1, wordCounts[127908]);
         }
 
         [TestMethod]
@@ -64,22 +64,22 @@ namespace FileHandlerTaskFactoryTests
         {
             string inputFile = @".\NestedFiles.zip";
             
-            ConcurrentDictionary<int, int> wordCounts = new ConcurrentDictionary<int, int>();
-            wordCounts.TryAdd(36600, 5);
-            wordCounts.TryAdd(193392, 3);
+            ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
+            wordCounts.TryAdd(39737, 5);
+            wordCounts.TryAdd(210484, 3);
 
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(6, wordCounts.Count);
-            Assert.AreEqual(6, wordCounts[36600]);
-            Assert.AreEqual(1, wordCounts[36532]);
+            Assert.AreEqual(6, wordCounts[39737]);
+            Assert.AreEqual(1, wordCounts[39050]);
 
-            Assert.AreEqual(4, wordCounts[193392]);
-            Assert.AreEqual(1, wordCounts[183062]);
+            Assert.AreEqual(4, wordCounts[210484]);
+            Assert.AreEqual(1, wordCounts[192261]);
 
-            Assert.AreEqual(1, wordCounts[140548]);
-            Assert.AreEqual(1, wordCounts[117320]);
+            Assert.AreEqual(1, wordCounts[153053]);
+            Assert.AreEqual(1, wordCounts[127908]);
         }
     }
 }
