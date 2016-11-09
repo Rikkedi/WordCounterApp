@@ -8,6 +8,9 @@ namespace WordCountTests
 {
     static class FileWordCounts
     {
+        public static long FiveWordFile = 5;
+        public static long FiveHundredWordFile = 500;
+
         public static long PrinciplesofHumanKnowledge = 39737;
         public static long ThreeDialogues = 39050;
 

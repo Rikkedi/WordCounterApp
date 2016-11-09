@@ -28,7 +28,7 @@ namespace WordCountTests.FileStreamHandlerTests
             FileInfo fi = new FileInfo(inputFile);
             long count = await TextFileHandler.GetWordCount(fi);
 
-            Assert.AreEqual(5, count);
+            Assert.AreEqual(FileWordCounts.FiveWordFile, count);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace WordCountTests.FileStreamHandlerTests
             FileInfo fi = new FileInfo(inputFile);
             long count = await TextFileHandler.GetWordCount(fi);
 
-            Assert.AreEqual(500, count);
+            Assert.AreEqual(FileWordCounts.FiveHundredWordFile, count);
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace WordCountTests.FileStreamHandlerTests
             FileInfo fi = new FileInfo(inputFile);
             long count = await TextFileHandler.GetWordCount(fi);
 
-            Assert.AreEqual(500, count);
+            Assert.AreEqual(FileWordCounts.FiveHundredWordFile, count);
         }
 
         [TestMethod]
