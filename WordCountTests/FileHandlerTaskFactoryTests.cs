@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordCountGenerator;
 
-namespace FileHandlerTaskFactoryTests
+namespace WordCountTests.FileHandlerTaskFactoryTests
 {
     [TestClass]
     public class FileHandlerTaskFactoryTests
@@ -19,7 +19,7 @@ namespace FileHandlerTaskFactoryTests
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
-            Assert.AreEqual(1, wordCounts[39737]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.PrinciplesofHumanKnowledge]);
         }
 
         [TestMethod]
@@ -29,12 +29,12 @@ namespace FileHandlerTaskFactoryTests
             string inputFile = @".\George Berkeley - Three Dialogues.txt";
 
             ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
-            wordCounts.TryAdd(39050, 2);
+            wordCounts.TryAdd(FileWordCounts.ThreeDialogues, 2);
 
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
-            Assert.AreEqual(3, wordCounts[39050]);
+            Assert.AreEqual(3, wordCounts[FileWordCounts.ThreeDialogues]);
         }
 
         [TestMethod]
@@ -48,14 +48,14 @@ namespace FileHandlerTaskFactoryTests
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(6, wordCounts.Count);
-            Assert.AreEqual(1, wordCounts[39737]);
-            Assert.AreEqual(1, wordCounts[39050]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.PrinciplesofHumanKnowledge]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.ThreeDialogues]);
 
-            Assert.AreEqual(1, wordCounts[210484]);
-            Assert.AreEqual(1, wordCounts[192261]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.CritiqueofPureReason]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.Theodicy]);
 
-            Assert.AreEqual(1, wordCounts[153053]);
-            Assert.AreEqual(1, wordCounts[127908]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.EssayConcerningHumaneUnderstandingVol1]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.EssayConcerningHumaneUnderstandingVol2]);
         }
 
         [TestMethod]
@@ -65,21 +65,21 @@ namespace FileHandlerTaskFactoryTests
             string inputFile = @".\NestedFiles.zip";
             
             ConcurrentDictionary<long, int> wordCounts = new ConcurrentDictionary<long, int>();
-            wordCounts.TryAdd(39737, 5);
-            wordCounts.TryAdd(210484, 3);
+            wordCounts.TryAdd(FileWordCounts.PrinciplesofHumanKnowledge, 5);
+            wordCounts.TryAdd(FileWordCounts.CritiqueofPureReason, 3);
 
             FileInfo fi = new FileInfo(inputFile);
             await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(6, wordCounts.Count);
-            Assert.AreEqual(6, wordCounts[39737]);
-            Assert.AreEqual(1, wordCounts[39050]);
+            Assert.AreEqual(6, wordCounts[FileWordCounts.PrinciplesofHumanKnowledge]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.ThreeDialogues]);
 
-            Assert.AreEqual(4, wordCounts[210484]);
-            Assert.AreEqual(1, wordCounts[192261]);
+            Assert.AreEqual(4, wordCounts[FileWordCounts.CritiqueofPureReason]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.Theodicy]);
 
-            Assert.AreEqual(1, wordCounts[153053]);
-            Assert.AreEqual(1, wordCounts[127908]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.EssayConcerningHumaneUnderstandingVol1]);
+            Assert.AreEqual(1, wordCounts[FileWordCounts.EssayConcerningHumaneUnderstandingVol2]);
         }
     }
 }

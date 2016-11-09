@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordCountGenerator;
 
-namespace FileStreamHandlerTests
+namespace WordCountTests.FileStreamHandlerTests
 {
     [TestClass]
     public class FileStreamHandlerTests
@@ -66,7 +66,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(39951, count);  // Word Count based on MS Word
             //Assert.AreEqual(36600, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(39737, count);
+            Assert.AreEqual(FileWordCounts.PrinciplesofHumanKnowledge, count);
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(39105, count);  // Word Count based on MS Word
             //Assert.AreEqual(36532, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(39050, count);
+            Assert.AreEqual(FileWordCounts.ThreeDialogues, count);
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(211731, count);  // Word Count based on MS Word
             //Assert.AreEqual(193392, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(210484, count);
+            Assert.AreEqual(FileWordCounts.CritiqueofPureReason, count);
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(192328, count);  // Word Count based on MS Word
             //Assert.AreEqual(183062, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(192261, count);
+            Assert.AreEqual(FileWordCounts.Theodicy, count);
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(153324, count);  // Word Count based on MS Word
             //Assert.AreEqual(140548, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(153053, count);
+            Assert.AreEqual(FileWordCounts.EssayConcerningHumaneUnderstandingVol1, count);
         }
 
         [TestMethod]
@@ -136,7 +136,7 @@ namespace FileStreamHandlerTests
 
             //Assert.AreEqual(127959, count);  // Word Count based on MS Word
             //Assert.AreEqual(117320, count);  // Word Count based on string.Split() over the entire file
-            Assert.AreEqual(127908, count);
+            Assert.AreEqual(FileWordCounts.EssayConcerningHumaneUnderstandingVol2, count);
         }
     }
 }

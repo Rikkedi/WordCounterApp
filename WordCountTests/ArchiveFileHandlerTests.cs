@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordCountGenerator;
 
-namespace ArchiveFileHandlerTests
+namespace WordCountTests.ArchiveFileHandlerTests
 {
     [TestClass]
     public class ArchiveFileHandlerTests
@@ -19,8 +19,8 @@ namespace ArchiveFileHandlerTests
             List<long> counts = (List<long>) await ArchiveFileHandler.GetWordCount(fi);
 
             Assert.AreEqual(2, counts.Count);
-            Assert.IsTrue(counts.Contains(39737));
-            Assert.IsTrue(counts.Contains(39050));
+            Assert.IsTrue(counts.Contains(FileWordCounts.PrinciplesofHumanKnowledge));
+            Assert.IsTrue(counts.Contains(FileWordCounts.ThreeDialogues));
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace ArchiveFileHandlerTests
 
             Assert.AreEqual(2, counts.Count);
             Assert.IsTrue(counts.Contains(153053));
-            Assert.IsTrue(counts.Contains(127908));
+            Assert.IsTrue(counts.Contains(FileWordCounts.EssayConcerningHumaneUnderstandingVol2));
         }
 
         [TestMethod]
@@ -47,14 +47,14 @@ namespace ArchiveFileHandlerTests
             List<long> counts = (List<long>)await ArchiveFileHandler.GetWordCount(fi);
 
             Assert.AreEqual(6, counts.Count);
-            Assert.IsTrue(counts.Contains(39737));
-            Assert.IsTrue(counts.Contains(39050));
+            Assert.IsTrue(counts.Contains(FileWordCounts.PrinciplesofHumanKnowledge));
+            Assert.IsTrue(counts.Contains(FileWordCounts.ThreeDialogues));
 
-            Assert.IsTrue(counts.Contains(210484));
-            Assert.IsTrue(counts.Contains(192261));
+            Assert.IsTrue(counts.Contains(FileWordCounts.CritiqueofPureReason));
+            Assert.IsTrue(counts.Contains(FileWordCounts.Theodicy));
 
-            Assert.IsTrue(counts.Contains(153053));
-            Assert.IsTrue(counts.Contains(127908));
+            Assert.IsTrue(counts.Contains(FileWordCounts.EssayConcerningHumaneUnderstandingVol1));
+            Assert.IsTrue(counts.Contains(FileWordCounts.EssayConcerningHumaneUnderstandingVol2));
         }
     }
 }
