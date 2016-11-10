@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace WordCountGenerator
+namespace WordCountGenerator.Handlers
 {
     public static class TextFileHandler
     {

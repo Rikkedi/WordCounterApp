@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WordCountGenerator;
+using WordCountGenerator.Handlers;
 
 namespace WordCountTests.ArchiveFileHandlerTests
 {

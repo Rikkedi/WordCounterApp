@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 
-namespace WordCountGenerator
+namespace WordCountGenerator.Handlers
 {
     public static class ArchiveFileHandler
     {
