@@ -16,7 +16,7 @@ namespace WordCountGUI
         public string folderName { get; private set; }
         public BindingSource dataBinding { get; private set; }
 
-        private FileDiscoverer folderProcessor;
+        private FolderHandler folderProcessor;
         private Task fileDiscoveryTask;
         private Task fileProcessingTask;
         private bool fileProcessingStarted;
@@ -35,7 +35,7 @@ namespace WordCountGUI
             if (result == DialogResult.OK)
             {
                 this.folderName = folderBrowserDialog1.SelectedPath;
-                this.folderProcessor = new FileDiscoverer(this.folderName);
+                this.folderProcessor = new FolderHandler(this.folderName);
             }
 
             this.DiscoverInputFolder();

@@ -16,20 +16,20 @@ namespace WordCountTests.FileDiscovererTests
         [ExpectedException(typeof(System.ArgumentNullException))]
         public void FileDiscoverer_EmptyInputTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(String.Empty);
+            FolderHandler fd = new FolderHandler(String.Empty);
         }
 
         [TestMethod()]
         public void FileDiscovererTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(".");
+            FolderHandler fd = new FolderHandler(".");
             Assert.IsNotNull(fd.FileCountsByWordCount);
         }
 
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderTextOnlyTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
+            FolderHandler fd = new FolderHandler(FileDiscovererTests.FlatFolderTextFilesOnly);
             await fd.DiscoverFilesToProcess();
             await fd.ProcessFiles();
 
@@ -63,7 +63,7 @@ namespace WordCountTests.FileDiscovererTests
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderArchivesAndTextTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
+            FolderHandler fd = new FolderHandler(FileDiscovererTests.FlatFolderTextAndArchives);
             await fd.DiscoverFilesToProcess();
             await fd.ProcessFiles();
 
@@ -97,7 +97,7 @@ namespace WordCountTests.FileDiscovererTests
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderNestedArchivesTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
+            FolderHandler fd = new FolderHandler(FileDiscovererTests.FlatFolderNestedArchives);
             await fd.DiscoverFilesToProcess();
             await fd.ProcessFiles();
 
