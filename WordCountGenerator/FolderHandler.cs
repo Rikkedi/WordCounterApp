@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator
 {
-    public class FileDiscoverer
+    public class FolderHandler
     {
         private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
 
         public ConcurrentDictionary<long, int> FileCountsByWordCount { get; private set; }
 
-        public FileDiscoverer(String path)
+        public FolderHandler(String path)
         {
             if (String.IsNullOrEmpty(path))
             {

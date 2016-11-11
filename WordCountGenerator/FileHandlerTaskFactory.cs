@@ -7,7 +7,7 @@ using WordCountGenerator.Handlers;
 
 namespace WordCountGenerator
 {
-    public static class FileHandlerTaskFactory
+    internal static class FileHandlerTaskFactory
     {
         // Must ensure file exists before invoking
         public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<long, int> wordCounts)

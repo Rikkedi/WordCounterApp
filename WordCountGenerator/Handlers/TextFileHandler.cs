@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator.Handlers
 {
-    public static class TextFileHandler
+    internal static class TextFileHandler
     {
         public static String TextFileExtension = @".txt";
         private static char[] StringSeparators = { ' ' };

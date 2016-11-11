@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator.Handlers
 {
-    public static class ArchiveFileHandler
+    internal static class ArchiveFileHandler
     {
         public static String ArchiveExtension = @".zip";
 
