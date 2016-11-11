@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace WordCountGUI_WPF
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for WordCountReport.xaml
     /// </summary>
-    public partial class MainWindow : NavigationWindow
+    public partial class WordCountReport : Page
     {
-        public MainWindow()
+        public WordCountReport()
         {
             InitializeComponent();
         }
