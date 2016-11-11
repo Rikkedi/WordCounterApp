@@ -56,6 +56,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WordCountAdapter.cs" />
     <Compile Include="WordCountHome.xaml.cs">
       <DependentUpon>WordCountHome.xaml</DependentUpon>
     </Compile>
@@ -109,6 +110,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WordCountGenerator\WordCountGenerator.csproj">
+      <Project>{8b15910e-827b-4c15-8415-1eafaa9e2f3b}</Project>
+      <Name>WordCountGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
