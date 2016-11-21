@@ -10,12 +10,12 @@ namespace WordCountGenerator.Handlers
     {
         public static String ArchiveExtension = @".zip";
 
-        public static bool IsArchiveFile(String file)
+        public static bool IsHandleable(String file)
         {
             return file.EndsWith(ArchiveFileHandler.ArchiveExtension);
         }
 
-        public static async Task<IEnumerable<long>> GetWordCount(FileInfo fi)
+        public static async Task<Dictionary<string, long>> GetWordCount(FileInfo fi)
         {
             if (fi == null)
             {
@@ -27,7 +27,7 @@ namespace WordCountGenerator.Handlers
                 throw new FileNotFoundException(fi.Name);
             }
 
-            if (!ArchiveFileHandler.IsArchiveFile(fi.Name))
+            if (!ArchiveFileHandler.IsHandleable(fi.Name))
             {
                 throw new ArgumentException(
                     String.Format(
@@ -36,13 +36,13 @@ namespace WordCountGenerator.Handlers
                         ArchiveFileHandler.ArchiveExtension));
             }
 
-            List<long> wordCounts = new List<long>();
+            Dictionary<string, long> wordCounts = new Dictionary<string, long>();
             await ProcessArchive(fi, wordCounts);
 
             return wordCounts;
         }
 
-        private static async Task ProcessArchive(FileInfo fi, List<Int64> wordCounts)
+        private static async Task ProcessArchive(FileInfo fi, Dictionary<string, long> wordCounts)
         {
             if (wordCounts == null)
             {
@@ -57,11 +57,13 @@ namespace WordCountGenerator.Handlers
                 {
                     ZipArchiveEntry entry = filesToProcess.Dequeue();
 
-                    if (TextFileHandler.IsTextFile(entry.Name))
+                    if (TextFileHandler.IsHandleable(entry.Name))
                     {
-                        wordCounts.Add(await TextFileHandler.GetWordCount(entry.Open()));
+                        await ArchiveFileHandler.MergeWordCounts(
+                            wordCounts, 
+                            await TextFileHandler.GetWordCount(entry.Open()));
                     }
-                    else if (ArchiveFileHandler.IsArchiveFile(entry.Name))
+                    else if (ArchiveFileHandler.IsHandleable(entry.Name))
                     {
                         Stream zipEntry = entry.Open();
                         ZipArchive innerArchive = new ZipArchive(zipEntry, ZipArchiveMode.Read, false);
@@ -73,6 +75,24 @@ namespace WordCountGenerator.Handlers
                     }
                 }
             }
+        }
+
+        private static async Task MergeWordCounts(Dictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)
+        {
+            await Task.Run(() =>
+            {
+                foreach (KeyValuePair<string, long> wordCount in wordCounts)
+                {
+                    if (aggregateWordCounts.ContainsKey(wordCount.Key))
+                    {
+                        aggregateWordCounts[wordCount.Key] += wordCount.Value;
+                    }
+                    else
+                    {
+                        aggregateWordCounts[wordCount.Key] = wordCount.Value;
+                    }
+                }
+            });
         }
     }
 }

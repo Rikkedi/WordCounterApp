@@ -13,7 +13,7 @@ namespace WordCountGenerator
         private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
 
-        public ConcurrentDictionary<long, int> FileCountsByWordCount { get; private set; }
+        public ConcurrentDictionary<string, long> FileCountsByWordCount { get; private set; }
 
         public FolderHandler(String path)
         {
@@ -26,26 +26,23 @@ namespace WordCountGenerator
             {
                 this.rootDirectory = new DirectoryInfo(path);
             }
-            catch (SecurityException se)
+            catch (SecurityException)
             {
                 Console.WriteLine("User does not have permission to access {0}", path);
-                throw se;
             }
-            catch (ArgumentException ae)
+            catch (ArgumentException)
             {
                 Console.WriteLine("Path contains invalid characters");
-                throw ae;
             }
-            catch (PathTooLongException ptle)
+            catch (PathTooLongException)
             {
                 Console.WriteLine("Input path too long.");
-                throw ptle;
             }
 
-            this.FileCountsByWordCount = new ConcurrentDictionary<long, int>();
+            this.FileCountsByWordCount = new ConcurrentDictionary<string, long>();
         }
 
-        public async Task DiscoverFilesToProcess()
+        public void DiscoverFiles()
         {
             if (this.rootDirectory == null || !this.rootDirectory.Exists)
             {
@@ -65,18 +62,15 @@ namespace WordCountGenerator
                 {
                     DirectoryInfo currentDirectory = subDirectoriesToExplore.Dequeue();
 
-                    await Task.Run(() =>
+                    Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
                     {
-                        Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
-                        {
-                            this.concurrentFileQueue.Enqueue(currentFile);
-                        });
-
-                        foreach (DirectoryInfo subDir in currentDirectory.EnumerateDirectories())
-                        {
-                            subDirectoriesToExplore.Enqueue(subDir);
-                        }
+                        this.concurrentFileQueue.Enqueue(currentFile);
                     });
+
+                    foreach (DirectoryInfo subDir in currentDirectory.EnumerateDirectories())
+                    {
+                        subDirectoriesToExplore.Enqueue(subDir);
+                    }
                 }
             }
             catch (SecurityException se)
@@ -90,19 +84,20 @@ namespace WordCountGenerator
             }
         }
 
-        public async Task ProcessFiles()
+        public async Task ProcessFilesAsync()
         {
             if (this.concurrentFileQueue == null)
             {
                 return;
             }
 
+            // TODO -- Can we do parallel processing of these items?
             while (!this.concurrentFileQueue.IsEmpty)
             {
                 FileInfo currentFile;
                 if (this.concurrentFileQueue.TryDequeue(out currentFile))
                 {
-                    await FileHandlerTaskFactory.ProcessFile(currentFile, this.FileCountsByWordCount);
+                    await FileHandler.ProcessFile(currentFile, this.FileCountsByWordCount);
                 }
                 else
                 {

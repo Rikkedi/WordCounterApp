@@ -43,8 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\ArchiveFileHandler.cs" />
-    <Compile Include="FolderHandler.cs" />
-    <Compile Include="FileHandlerTaskFactory.cs" />
+    <Compile Include="FileDiscoverer.cs" />
+    <Compile Include="FileHandler.cs" />
     <Compile Include="Handlers\TextFileHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
