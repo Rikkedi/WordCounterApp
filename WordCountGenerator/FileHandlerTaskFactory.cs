@@ -12,14 +12,11 @@ namespace WordCountGenerator
         // Must ensure file exists before invoking
         public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<long, int> wordCounts)
         {
-            if (fileToProcess == null)
+            // TODO : When caller is updated to handle checking task results for exception, have this throw
+            //        ArgumentNullExceptions on these
+            if (fileToProcess == null || wordCounts == null)
             {
-                throw new ArgumentNullException("fileToProcess");
-            }
-            
-            if (wordCounts == null)
-            {
-                throw new ArgumentNullException("wordCounts");
+                return;
             }
 
             if (!fileToProcess.Exists)
@@ -31,15 +28,7 @@ namespace WordCountGenerator
             if (TextFileHandler.IsTextFile(fileToProcess.Extension))
             {
                 long wordCount = await TextFileHandler.GetWordCount(fileToProcess);
-
-                if (wordCounts.ContainsKey(wordCount))
-                {
-                    wordCounts[wordCount]++;
-                }
-                else
-                {
-                    wordCounts.TryAdd(wordCount, 1);
-                }
+                FileHandlerTaskFactory.UpdateWordCount(wordCounts, wordCount);
             }
             else if (ArchiveFileHandler.IsArchiveFile(fileToProcess.Extension))
             {
@@ -47,14 +36,7 @@ namespace WordCountGenerator
 
                 foreach (int wordCount in archiveWordCounts)
                 {
-                    if (wordCounts.ContainsKey(wordCount))
-                    {
-                        wordCounts[wordCount]++;
-                    }
-                    else
-                    {
-                        wordCounts.TryAdd(wordCount, 1);
-                    }
+                    FileHandlerTaskFactory.UpdateWordCount(wordCounts, wordCount);
                 }
             }
             else
@@ -65,6 +47,18 @@ namespace WordCountGenerator
                         fileToProcess.Extension, 
                         fileToProcess.FullName)
                         );
+            }
+        }
+
+        private static void UpdateWordCount(ConcurrentDictionary<Int64, Int32> wordCounts, Int64 wordCount)
+        {
+            if (wordCounts.ContainsKey(wordCount))
+            {
+                wordCounts[wordCount]++;
+            }
+            else
+            {
+                wordCounts.TryAdd(wordCount, 1);
             }
         }
     }
