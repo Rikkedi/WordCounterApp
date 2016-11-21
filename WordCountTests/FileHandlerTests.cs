@@ -18,7 +18,7 @@ namespace WordCountTests.FileHandlerTaskFactoryTests
 
             ConcurrentDictionary<string, long> wordCounts = new ConcurrentDictionary<string, long>();
             FileInfo fi = new FileInfo(inputFile);
-            await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
+            await FileHandler.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(22, wordCounts["wherein"]);
         }
@@ -39,7 +39,7 @@ namespace WordCountTests.FileHandlerTaskFactoryTests
 
             FileInfo fi = new FileInfo(inputFile);
             ConcurrentDictionary<string, long> wordCounts = new ConcurrentDictionary<string, long>();
-            await FileHandlerTaskFactory.ProcessFile(fi, wordCounts);
+            await FileHandler.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(totalWordCount, wordCounts.Values.Sum());
             Assert.AreEqual(2, wordCounts["DEFINITION"]);

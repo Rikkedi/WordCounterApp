@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="ArchiveFileHandlerTests.cs" />
     <Compile Include="FileDiscovererTests.cs" />
-    <Compile Include="FileHandlerTaskFactoryTests.cs" />
+    <Compile Include="FileHandlerTests.cs" />
     <Compile Include="FileStreamHandlerTests.cs" />
     <Compile Include="FileWordCounts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

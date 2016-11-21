@@ -10,7 +10,7 @@ namespace WordCountGenerator.Handlers
         public static String TextFileExtension = @".txt";
         private static char[] StringSeparators = { ' ' };
 
-        public static bool IsTextFile(string file)
+        public static bool IsHandleable(string file)
         {
             return file.EndsWith(TextFileHandler.TextFileExtension);
         }
@@ -27,7 +27,7 @@ namespace WordCountGenerator.Handlers
                 throw new FileNotFoundException("File {0} does not exist", file.Name);
             }
 
-            if (!TextFileHandler.IsTextFile(file.Name))
+            if (!TextFileHandler.IsHandleable(file.Name))
             {
                 throw new ArgumentException(
                     String.Format(
@@ -48,7 +48,7 @@ namespace WordCountGenerator.Handlers
             }
         }
 
-        public static async Task<Dictionary<string, long>> GetWordCount(Stream textFile)
+        internal static async Task<Dictionary<string, long>> GetWordCount(Stream textFile)
         {
             if (textFile == null)
             {

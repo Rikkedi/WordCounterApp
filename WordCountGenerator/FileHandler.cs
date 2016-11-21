@@ -7,7 +7,7 @@ using WordCountGenerator.Handlers;
 
 namespace WordCountGenerator
 {
-    public static class FileHandlerTaskFactory
+    public static class FileHandler
     {
         // Must ensure file exists before invoking
         public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<string, long> aggregateWordCounts)
@@ -27,11 +27,11 @@ namespace WordCountGenerator
 
             Dictionary<string, long> fileWordCounts;
 
-            if (TextFileHandler.IsTextFile(fileToProcess.Extension))
+            if (TextFileHandler.IsHandleable(fileToProcess.Extension))
             {
                 fileWordCounts = await TextFileHandler.GetWordCount(fileToProcess);
             }
-            else if (ArchiveFileHandler.IsArchiveFile(fileToProcess.Extension))
+            else if (ArchiveFileHandler.IsHandleable(fileToProcess.Extension))
             {
                 fileWordCounts = await ArchiveFileHandler.GetWordCount(fileToProcess);
             }
@@ -47,7 +47,7 @@ namespace WordCountGenerator
                 return;
             }
 
-            FileHandlerTaskFactory.MergeWordCounts(aggregateWordCounts, fileWordCounts);
+            FileHandler.MergeWordCounts(aggregateWordCounts, fileWordCounts);
         }
 
         private static void MergeWordCounts(ConcurrentDictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)

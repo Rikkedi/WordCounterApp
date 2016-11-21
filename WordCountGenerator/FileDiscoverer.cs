@@ -91,12 +91,13 @@ namespace WordCountGenerator
                 return;
             }
 
+            // TODO -- Can we do parallel processing of these items?
             while (!this.concurrentFileQueue.IsEmpty)
             {
                 FileInfo currentFile;
                 if (this.concurrentFileQueue.TryDequeue(out currentFile))
                 {
-                    await FileHandlerTaskFactory.ProcessFile(currentFile, this.FileCountsByWordCount);
+                    await FileHandler.ProcessFile(currentFile, this.FileCountsByWordCount);
                 }
                 else
                 {

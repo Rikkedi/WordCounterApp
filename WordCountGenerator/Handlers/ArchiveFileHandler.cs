@@ -10,7 +10,7 @@ namespace WordCountGenerator.Handlers
     {
         public static String ArchiveExtension = @".zip";
 
-        public static bool IsArchiveFile(String file)
+        public static bool IsHandleable(String file)
         {
             return file.EndsWith(ArchiveFileHandler.ArchiveExtension);
         }
@@ -27,7 +27,7 @@ namespace WordCountGenerator.Handlers
                 throw new FileNotFoundException(fi.Name);
             }
 
-            if (!ArchiveFileHandler.IsArchiveFile(fi.Name))
+            if (!ArchiveFileHandler.IsHandleable(fi.Name))
             {
                 throw new ArgumentException(
                     String.Format(
@@ -57,13 +57,13 @@ namespace WordCountGenerator.Handlers
                 {
                     ZipArchiveEntry entry = filesToProcess.Dequeue();
 
-                    if (TextFileHandler.IsTextFile(entry.Name))
+                    if (TextFileHandler.IsHandleable(entry.Name))
                     {
                         await ArchiveFileHandler.MergeWordCounts(
                             wordCounts, 
                             await TextFileHandler.GetWordCount(entry.Open()));
                     }
-                    else if (ArchiveFileHandler.IsArchiveFile(entry.Name))
+                    else if (ArchiveFileHandler.IsHandleable(entry.Name))
                     {
                         Stream zipEntry = entry.Open();
                         ZipArchive innerArchive = new ZipArchive(zipEntry, ZipArchiveMode.Read, false);
