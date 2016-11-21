@@ -30,8 +30,8 @@ namespace WordCountTests.FileDiscovererTests
         public async Task DiscoverFilesToProcess_FlatFolderTextOnlyTest()
         {
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
-            await fd.DiscoverFilesToProcess();
-            await fd.ProcessFiles();
+            fd.DiscoverFiles();
+            await fd.ProcessFilesAsync();
 
             Assert.AreEqual(8, fd.FileCountsByWordCount.Count);
 
@@ -64,8 +64,8 @@ namespace WordCountTests.FileDiscovererTests
         public async Task DiscoverFilesToProcess_FlatFolderArchivesAndTextTest()
         {
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
-            await fd.DiscoverFilesToProcess();
-            await fd.ProcessFiles();
+            fd.DiscoverFiles();
+            await fd.ProcessFilesAsync();
 
             Assert.AreEqual(8, fd.FileCountsByWordCount.Count);
 
@@ -98,8 +98,8 @@ namespace WordCountTests.FileDiscovererTests
         public async Task DiscoverFilesToProcess_FlatFolderNestedArchivesTest()
         {
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
-            await fd.DiscoverFilesToProcess();
-            await fd.ProcessFiles();
+            fd.DiscoverFiles();
+            await fd.ProcessFilesAsync();
 
             Assert.AreEqual(6, fd.FileCountsByWordCount.Count);
 
