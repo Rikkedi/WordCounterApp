@@ -13,7 +13,7 @@ namespace WordCountGenerator
         private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
 
-        public ConcurrentDictionary<long, int> FileCountsByWordCount { get; private set; }
+        public ConcurrentDictionary<string, long> FileCountsByWordCount { get; private set; }
 
         public FileDiscoverer(String path)
         {
@@ -39,7 +39,7 @@ namespace WordCountGenerator
                 Console.WriteLine("Input path too long.");
             }
 
-            this.FileCountsByWordCount = new ConcurrentDictionary<long, int>();
+            this.FileCountsByWordCount = new ConcurrentDictionary<string, long>();
         }
 
         public void DiscoverFiles()

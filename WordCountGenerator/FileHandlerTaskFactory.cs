@@ -10,11 +10,11 @@ namespace WordCountGenerator
     public static class FileHandlerTaskFactory
     {
         // Must ensure file exists before invoking
-        public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<long, int> wordCounts)
+        public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<string, long> aggregateWordCounts)
         {
             // TODO : When caller is updated to handle checking task results for exception, have this throw
             //        ArgumentNullExceptions on these
-            if (fileToProcess == null || wordCounts == null)
+            if (fileToProcess == null || aggregateWordCounts == null)
             {
                 return;
             }
@@ -25,19 +25,15 @@ namespace WordCountGenerator
                 return;
             }
 
+            Dictionary<string, long> fileWordCounts;
+
             if (TextFileHandler.IsTextFile(fileToProcess.Extension))
             {
-                long wordCount = await TextFileHandler.GetWordCount(fileToProcess);
-                FileHandlerTaskFactory.UpdateWordCount(wordCounts, wordCount);
+                fileWordCounts = await TextFileHandler.GetWordCount(fileToProcess);
             }
             else if (ArchiveFileHandler.IsArchiveFile(fileToProcess.Extension))
             {
-                List<long> archiveWordCounts = (List<long>) await ArchiveFileHandler.GetWordCount(fileToProcess);
-
-                foreach (int wordCount in archiveWordCounts)
-                {
-                    FileHandlerTaskFactory.UpdateWordCount(wordCounts, wordCount);
-                }
+                fileWordCounts = await ArchiveFileHandler.GetWordCount(fileToProcess);
             }
             else
             {
@@ -47,18 +43,21 @@ namespace WordCountGenerator
                         fileToProcess.Extension, 
                         fileToProcess.FullName)
                         );
+
+                return;
             }
+
+            FileHandlerTaskFactory.MergeWordCounts(aggregateWordCounts, fileWordCounts);
         }
 
-        private static void UpdateWordCount(ConcurrentDictionary<Int64, Int32> wordCounts, Int64 wordCount)
+        private static void MergeWordCounts(ConcurrentDictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)
         {
-            if (wordCounts.ContainsKey(wordCount))
+            foreach(KeyValuePair<string, long> wordCount in wordCounts)
             {
-                wordCounts[wordCount]++;
-            }
-            else
-            {
-                wordCounts.TryAdd(wordCount, 1);
+                aggregateWordCounts.AddOrUpdate(
+                    wordCount.Key, 
+                    wordCount.Value, 
+                    (key, vOld) => vOld += wordCount.Value);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace WordCountGenerator.Handlers
             return file.EndsWith(TextFileHandler.TextFileExtension);
         }
 
-        public static async Task<long> GetWordCount(FileInfo file)
+        public static async Task<Dictionary<string, long>> GetWordCount(FileInfo file)
         {
             if (file == null)
             {
@@ -47,14 +48,14 @@ namespace WordCountGenerator.Handlers
             }
         }
 
-        public static async Task<long> GetWordCount(Stream textFile)
+        public static async Task<Dictionary<string, long>> GetWordCount(Stream textFile)
         {
             if (textFile == null)
             {
-                return 0;
+                return null;
             }
 
-            long wordCount = 0;  // Use a long to support large text files
+            Dictionary<string, long> wordCounts = new Dictionary<string, long>(StringComparer.Ordinal);
 
             using (StreamReader file = new StreamReader(textFile))
             {
@@ -64,11 +65,24 @@ namespace WordCountGenerator.Handlers
 
                     string[] words = fileBuffer.Trim().Split(TextFileHandler.StringSeparators, StringSplitOptions.RemoveEmptyEntries);
 
-                    wordCount += words.Length;
+                    await Task.Run(() =>
+                    {
+                        foreach (string word in words)
+                        {
+                            if (wordCounts.ContainsKey(word))
+                            {
+                                wordCounts[word]++;
+                            }
+                            else
+                            {
+                                wordCounts[word] = 1;
+                            }
+                        }
+                    });
                 }
             }
 
-            return wordCount;
+            return wordCounts;
         }
     }
 }

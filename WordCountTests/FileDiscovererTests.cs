@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WordCountGenerator;
@@ -29,97 +30,66 @@ namespace WordCountTests.FileDiscovererTests
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderTextOnlyTest()
         {
+            long totalWordCount =
+                FileWordCounts.FiveWordFile +
+                (2 * FileWordCounts.FiveHundredWordFile) +
+                FileWordCounts.PrinciplesofHumanKnowledge +
+                FileWordCounts.ThreeDialogues +
+                FileWordCounts.CritiqueofPureReason +
+                FileWordCounts.Theodicy +
+                FileWordCounts.EssayConcerningHumaneUnderstandingVol1 +
+                FileWordCounts.EssayConcerningHumaneUnderstandingVol2;
+
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
             fd.DiscoverFiles();
             await fd.ProcessFilesAsync();
 
-            Assert.AreEqual(8, fd.FileCountsByWordCount.Count);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.FiveWordFile));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.FiveWordFile]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.FiveHundredWordFile));
-            Assert.AreEqual(2, fd.FileCountsByWordCount[FileWordCounts.FiveHundredWordFile]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.PrinciplesofHumanKnowledge));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.PrinciplesofHumanKnowledge]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.ThreeDialogues));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.ThreeDialogues]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.CritiqueofPureReason));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.CritiqueofPureReason]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.Theodicy));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.Theodicy]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol1));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol1]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol2));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol2]);
+            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
+            Assert.AreEqual(7, fd.FileCountsByWordCount["Lorem"]);
+            Assert.AreEqual(2, fd.FileCountsByWordCount["lorem"]);
         }
 
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderArchivesAndTextTest()
         {
+            long totalWordCount =
+                FileWordCounts.FiveWordFile +
+                (2 * FileWordCounts.FiveHundredWordFile) +
+                (3 * FileWordCounts.PrinciplesofHumanKnowledge) +
+                (3 * FileWordCounts.ThreeDialogues) +
+                (2 * FileWordCounts.CritiqueofPureReason) +
+                (2 * FileWordCounts.Theodicy) +
+                (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
+                (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
+
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
             fd.DiscoverFiles();
             await fd.ProcessFilesAsync();
 
-            Assert.AreEqual(8, fd.FileCountsByWordCount.Count);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.FiveWordFile));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.FiveWordFile]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.FiveHundredWordFile));
-            Assert.AreEqual(2, fd.FileCountsByWordCount[FileWordCounts.FiveHundredWordFile]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.PrinciplesofHumanKnowledge));
-            Assert.AreEqual(3, fd.FileCountsByWordCount[FileWordCounts.PrinciplesofHumanKnowledge]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.ThreeDialogues));
-            Assert.AreEqual(3, fd.FileCountsByWordCount[FileWordCounts.ThreeDialogues]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.CritiqueofPureReason));
-            Assert.AreEqual(2, fd.FileCountsByWordCount[FileWordCounts.CritiqueofPureReason]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.Theodicy));
-            Assert.AreEqual(2, fd.FileCountsByWordCount[FileWordCounts.Theodicy]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol1));
-            Assert.AreEqual(3, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol1]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol2));
-            Assert.AreEqual(3, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol2]);
+            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
+            Assert.AreEqual(7, fd.FileCountsByWordCount["Lorem"]);
+            Assert.AreEqual(2, fd.FileCountsByWordCount["lorem"]);
+            Assert.AreEqual(3, fd.FileCountsByWordCount["ZAHAB?"]);
         }
 
         [TestMethod()]
         public async Task DiscoverFilesToProcess_FlatFolderNestedArchivesTest()
         {
+            long totalWordCount =
+                (4 * FileWordCounts.PrinciplesofHumanKnowledge) +
+                (4 * FileWordCounts.ThreeDialogues) +
+                (1 * FileWordCounts.CritiqueofPureReason) +
+                (1 * FileWordCounts.Theodicy) +
+                (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
+                (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
+
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
             fd.DiscoverFiles();
             await fd.ProcessFilesAsync();
 
-            Assert.AreEqual(6, fd.FileCountsByWordCount.Count);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.PrinciplesofHumanKnowledge));
-            Assert.AreEqual(4, fd.FileCountsByWordCount[FileWordCounts.PrinciplesofHumanKnowledge]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.ThreeDialogues));
-            Assert.AreEqual(4, fd.FileCountsByWordCount[FileWordCounts.ThreeDialogues]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.CritiqueofPureReason));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.CritiqueofPureReason]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.Theodicy));
-            Assert.AreEqual(1, fd.FileCountsByWordCount[FileWordCounts.Theodicy]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol1));
-            Assert.AreEqual(4, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol1]);
-
-            Assert.IsTrue(fd.FileCountsByWordCount.ContainsKey(FileWordCounts.EssayConcerningHumaneUnderstandingVol2));
-            Assert.AreEqual(4, fd.FileCountsByWordCount[FileWordCounts.EssayConcerningHumaneUnderstandingVol2]);
+            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
+            Assert.AreEqual(4, fd.FileCountsByWordCount["PRODUCETH."]);
+            Assert.AreEqual(4, fd.FileCountsByWordCount["ZAHAB?"]);
         }
     }
 }
