@@ -35,7 +35,13 @@ namespace WordCountGenerator.Handlers
                         TextFileHandler.TextFileExtension));
             }
 
-            using (FileStream fs = file.OpenRead())
+            using (FileStream fs = new FileStream(
+                file.FullName, 
+                FileMode.Open, 
+                FileAccess.Read, 
+                FileShare.Read, 
+                bufferSize: 4096, 
+                useAsync: true))
             {
                 return await TextFileHandler.GetWordCount(fs);
             }
