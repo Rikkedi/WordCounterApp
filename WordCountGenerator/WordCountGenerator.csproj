@@ -44,7 +44,8 @@
   <ItemGroup>
     <Compile Include="Handlers\ArchiveFileHandler.cs" />
     <Compile Include="FileDiscoverer.cs" />
-    <Compile Include="FileHandler.cs" />
+    <Compile Include="FileHandlerController.cs" />
+    <Compile Include="Handlers\IFileHandler.cs" />
     <Compile Include="Handlers\TextFileHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

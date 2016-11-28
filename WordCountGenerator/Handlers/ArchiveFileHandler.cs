@@ -6,16 +6,30 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator.Handlers
 {
-    public static class ArchiveFileHandler
+    public class ArchiveFileHandler : IFileHandler
     {
-        public static String ArchiveExtension = @".zip";
+        private TextFileHandler textFileHandler;
+        public const string ArchiveExtension = @".zip";
 
-        public static bool IsHandleable(String file)
+        public ArchiveFileHandler()
+        {
+            this.textFileHandler = new TextFileHandler();
+        }
+
+        // If we need to support multiple subtypes in archives, switch to take IFileHandler 
+        // then do a sequential 'try-cast' for the different handler types.  Can also extend 
+        // to take multiple IFileHandlers.
+        public ArchiveFileHandler(TextFileHandler subFileHandler)
+        {
+            this.textFileHandler = subFileHandler;
+        }
+
+        public bool IsHandleable(String file)
         {
             return file.EndsWith(ArchiveFileHandler.ArchiveExtension);
         }
 
-        public static async Task<Dictionary<string, long>> GetWordCount(FileInfo fi)
+        public async Task<Dictionary<string, long>> GetWordCount(FileInfo fi)
         {
             if (fi == null)
             {
@@ -27,7 +41,7 @@ namespace WordCountGenerator.Handlers
                 throw new FileNotFoundException(fi.Name);
             }
 
-            if (!ArchiveFileHandler.IsHandleable(fi.Name))
+            if (!this.IsHandleable(fi.Name))
             {
                 throw new ArgumentException(
                     String.Format(
@@ -42,7 +56,7 @@ namespace WordCountGenerator.Handlers
             return wordCounts;
         }
 
-        private static async Task ProcessArchive(FileInfo fi, Dictionary<string, long> wordCounts)
+        private async Task ProcessArchive(FileInfo fi, Dictionary<string, long> wordCounts)
         {
             if (wordCounts == null)
             {
@@ -57,13 +71,13 @@ namespace WordCountGenerator.Handlers
                 {
                     ZipArchiveEntry entry = filesToProcess.Dequeue();
 
-                    if (TextFileHandler.IsHandleable(entry.Name))
+                    if (this.textFileHandler.IsHandleable(entry.Name))
                     {
-                        await ArchiveFileHandler.MergeWordCounts(
+                        await this.MergeWordCounts(
                             wordCounts, 
-                            await TextFileHandler.GetWordCount(entry.Open()));
+                            await this.textFileHandler.GetWordCount(entry.Open()));
                     }
-                    else if (ArchiveFileHandler.IsHandleable(entry.Name))
+                    else if (this.IsHandleable(entry.Name))
                     {
                         Stream zipEntry = entry.Open();
                         ZipArchive innerArchive = new ZipArchive(zipEntry, ZipArchiveMode.Read, false);
@@ -77,7 +91,7 @@ namespace WordCountGenerator.Handlers
             }
         }
 
-        private static async Task MergeWordCounts(Dictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)
+        private async Task MergeWordCounts(Dictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)
         {
             await Task.Run(() =>
             {

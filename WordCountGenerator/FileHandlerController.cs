@@ -7,13 +7,20 @@ using WordCountGenerator.Handlers;
 
 namespace WordCountGenerator
 {
-    public static class FileHandler
+    public class FileHandlerController
     {
-        // Must ensure file exists before invoking
-        public static async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<string, long> aggregateWordCounts)
+        private ArchiveFileHandler archiveHandler;
+        private TextFileHandler textHandler;
+
+        public FileHandlerController()
         {
-            // TODO : When caller is updated to handle checking task results for exception, have this throw
-            //        ArgumentNullExceptions on these
+            this.textHandler = new TextFileHandler();
+            this.archiveHandler = new ArchiveFileHandler(this.textHandler);
+        }
+
+        // Must ensure file exists before invoking
+        public async Task ProcessFile(FileInfo fileToProcess, ConcurrentDictionary<string, long> aggregateWordCounts)
+        {
             if (fileToProcess == null || aggregateWordCounts == null)
             {
                 return;
@@ -27,13 +34,13 @@ namespace WordCountGenerator
 
             Dictionary<string, long> fileWordCounts;
 
-            if (TextFileHandler.IsHandleable(fileToProcess.Extension))
+            if (this.textHandler.IsHandleable(fileToProcess.Extension))
             {
-                fileWordCounts = await TextFileHandler.GetWordCount(fileToProcess);
+                fileWordCounts = await this.textHandler.GetWordCount(fileToProcess);
             }
-            else if (ArchiveFileHandler.IsHandleable(fileToProcess.Extension))
+            else if (this.archiveHandler.IsHandleable(fileToProcess.Extension))
             {
-                fileWordCounts = await ArchiveFileHandler.GetWordCount(fileToProcess);
+                fileWordCounts = await this.archiveHandler.GetWordCount(fileToProcess);
             }
             else
             {
@@ -47,7 +54,7 @@ namespace WordCountGenerator
                 return;
             }
 
-            FileHandler.MergeWordCounts(aggregateWordCounts, fileWordCounts);
+            FileHandlerController.MergeWordCounts(aggregateWordCounts, fileWordCounts);
         }
 
         private static void MergeWordCounts(ConcurrentDictionary<string, long> aggregateWordCounts, Dictionary<string, long> wordCounts)

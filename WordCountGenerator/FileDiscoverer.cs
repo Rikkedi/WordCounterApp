@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,10 +11,10 @@ namespace WordCountGenerator
 {
     public class FileDiscoverer
     {
-        private ConcurrentQueue<FileInfo> concurrentFileQueue;
         private DirectoryInfo rootDirectory;
+        private const int MaxRetries = 5;
 
-        public ConcurrentDictionary<string, long> FileCountsByWordCount { get; private set; }
+        public ConcurrentDictionary<string, long> AggregateWordOccurrenceCount { get; private set; }
 
         public FileDiscoverer(String path)
         {
@@ -39,39 +40,19 @@ namespace WordCountGenerator
                 Console.WriteLine("Input path too long.");
             }
 
-            this.FileCountsByWordCount = new ConcurrentDictionary<string, long>();
+            this.AggregateWordOccurrenceCount = new ConcurrentDictionary<string, long>();
         }
 
-        public void DiscoverFiles()
+        public IEnumerable<FileInfo> DiscoverFiles()
         {
             if (this.rootDirectory == null || !this.rootDirectory.Exists)
             {
-                return;
+                return null;
             }
 
             try
             {
-                // Start with the files in the base directory
-                this.concurrentFileQueue = new ConcurrentQueue<FileInfo>(this.rootDirectory.EnumerateFiles());
-
-                // Explore any subdirectories
-                IEnumerable<DirectoryInfo> subdirs = this.rootDirectory.EnumerateDirectories();
-                Queue<DirectoryInfo> subDirectoriesToExplore = new Queue<DirectoryInfo>(subdirs);
-
-                while (subDirectoriesToExplore.Count > 0)
-                {
-                    DirectoryInfo currentDirectory = subDirectoriesToExplore.Dequeue();
-
-                    Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
-                    {
-                        this.concurrentFileQueue.Enqueue(currentFile);
-                    });
-
-                    foreach (DirectoryInfo subDir in currentDirectory.EnumerateDirectories())
-                    {
-                        subDirectoriesToExplore.Enqueue(subDir);
-                    }
-                }
+                return DiscoverAllFilesUnderBaseDirectory();
             }
             catch (SecurityException se)
             {
@@ -82,28 +63,97 @@ namespace WordCountGenerator
             {
                 Console.WriteLine(dnfe.Message);
             }
+
+            return null;
         }
 
-        public async Task ProcessFilesAsync()
+        private IEnumerable<FileInfo> DiscoverAllFilesUnderBaseDirectory()
         {
-            if (this.concurrentFileQueue == null)
+            // Start with the files in the base directory
+            ConcurrentQueue<FileInfo> concurrentFileQueue = new ConcurrentQueue<FileInfo>(this.rootDirectory.EnumerateFiles());
+
+            // Explore any subdirectories
+            IEnumerable<DirectoryInfo> subdirs = this.rootDirectory.EnumerateDirectories();
+            ConcurrentQueue<DirectoryInfo> subDirectoriesToExplore = new ConcurrentQueue<DirectoryInfo>(subdirs);
+
+            int retries = 0;
+
+            while (subDirectoriesToExplore.Count > 0 && retries < FileDiscoverer.MaxRetries)
+            {
+                DirectoryInfo currentDirectory;
+                subDirectoriesToExplore.TryDequeue(out currentDirectory);
+
+                if (currentDirectory == null)
+                {
+                    retries++;
+                    Thread.Sleep(10);
+                    continue;
+                }
+
+                retries = 0;
+                try
+                {
+                    Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
+                    {
+                        concurrentFileQueue.Enqueue(currentFile);
+                    });
+                
+                    Parallel.ForEach<DirectoryInfo>(currentDirectory.EnumerateDirectories(), (directory) =>
+                    {
+                        subDirectoriesToExplore.Enqueue(directory);
+                    });
+                }
+                catch (SecurityException se)
+                {
+                    // Just skip the directory if we can't access it
+                    Console.WriteLine(String.Format("Security Exception encountered under {0}.  Results may contain a partial set of content. Exception: {1}", currentDirectory, se.Message));
+                }
+            }
+
+            return concurrentFileQueue;
+        }
+
+        public async Task ProcessFilesAsync(ConcurrentQueue<FileInfo> fileQueue)
+        {
+            if (fileQueue == null || fileQueue.Count == 0)
             {
                 return;
             }
 
-            // TODO -- Can we do parallel processing of these items?
-            while (!this.concurrentFileQueue.IsEmpty)
+            FileHandlerController fileHandler = new FileHandlerController();
+
+            while (!fileQueue.IsEmpty)
             {
                 FileInfo currentFile;
-                if (this.concurrentFileQueue.TryDequeue(out currentFile))
+                if (fileQueue.TryDequeue(out currentFile))
                 {
-                    await FileHandler.ProcessFile(currentFile, this.FileCountsByWordCount);
+                    await fileHandler.ProcessFile(currentFile, this.AggregateWordOccurrenceCount);
                 }
                 else
                 {
-                    await Task.Run(() => Thread.Sleep(100)); 
+                    await Task.Run(() => Thread.Sleep(10)); 
                 }
             }
+        }
+
+        /// <summary>
+        ///  Returns a dictionary that has as Key the word occurrence and as Value the number 
+        ///  of words that occur that many times
+        /// </summary>
+        /// <returns>Enumeration of the number of times a word occurred and how many words occurred that many times</returns>
+        public async Task<IEnumerable<KeyValuePair<long, int>>> GetCountOfWordsByWordsWithCount()
+        {
+            /*var foo = from wordOccurrenceCount in this.WordOccurrenceCount
+                      group wordOccurrenceCount by wordOccurrenceCount.Value into occurrencesByWords
+                      orderby occurrencesByWords.Key ascending
+                      select new KeyValuePair<long, int>(occurrencesByWords.Key, occurrencesByWords.Count());*/
+
+            var countWordsByOccurrenceCount = this.AggregateWordOccurrenceCount
+                .GroupBy(wordCount => wordCount.Value, wordCount => wordCount.Key)
+                .Select(countPair => new KeyValuePair<long, int>(countPair.Key, countPair.Count()))
+                .OrderBy(countPair => countPair.Key);
+
+            return countWordsByOccurrenceCount;
         }
     }
 }

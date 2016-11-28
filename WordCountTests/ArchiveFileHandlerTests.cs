@@ -16,8 +16,9 @@ namespace WordCountTests.ArchiveFileHandlerTests
         {
             string inputFile = @".\BerkeleyFiles.zip";
 
+            ArchiveFileHandler afh = new ArchiveFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> counts = await ArchiveFileHandler.GetWordCount(fi);
+            Dictionary<string, long> counts = await afh.GetWordCount(fi);
 
             Assert.AreEqual(
                 FileWordCounts.PrinciplesofHumanKnowledge + FileWordCounts.ThreeDialogues, 
@@ -30,8 +31,9 @@ namespace WordCountTests.ArchiveFileHandlerTests
         {
             string inputFile = @".\LockeFiles.zip";
 
+            ArchiveFileHandler afh = new ArchiveFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> counts = await ArchiveFileHandler.GetWordCount(fi);
+            Dictionary<string, long> counts = await afh.GetWordCount(fi);
 
             Assert.AreEqual(
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol1 + FileWordCounts.EssayConcerningHumaneUnderstandingVol2,
@@ -44,8 +46,9 @@ namespace WordCountTests.ArchiveFileHandlerTests
         {
             string inputFile = @".\NestedFiles.zip";
 
+            ArchiveFileHandler afh = new ArchiveFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> counts = await ArchiveFileHandler.GetWordCount(fi);
+            Dictionary<string, long> counts = await afh.GetWordCount(fi);
 
             long allFilesWordCount = 
                 FileWordCounts.PrinciplesofHumanKnowledge + 

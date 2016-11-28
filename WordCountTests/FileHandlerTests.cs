@@ -8,7 +8,7 @@ using WordCountGenerator;
 namespace WordCountTests.FileHandlerTaskFactoryTests
 {
     [TestClass]
-    public class FileHandlerTaskFactoryTests
+    public class FileHandlerControllerTests
     {
         [TestMethod]
         [DeploymentItem(@".\SampleInputFiles\George Berkeley - Principles of Human Knowledge.txt")]
@@ -16,9 +16,10 @@ namespace WordCountTests.FileHandlerTaskFactoryTests
         {
             string inputFile = @".\George Berkeley - Principles of Human Knowledge.txt";
 
+            FileHandlerController fhc = new FileHandlerController();
             ConcurrentDictionary<string, long> wordCounts = new ConcurrentDictionary<string, long>();
             FileInfo fi = new FileInfo(inputFile);
-            await FileHandler.ProcessFile(fi, wordCounts);
+            await fhc.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(22, wordCounts["wherein"]);
         }
@@ -37,9 +38,10 @@ namespace WordCountTests.FileHandlerTaskFactoryTests
 
             string inputFile = @".\NestedFiles.zip";
 
+            FileHandlerController fhc = new FileHandlerController();
             FileInfo fi = new FileInfo(inputFile);
             ConcurrentDictionary<string, long> wordCounts = new ConcurrentDictionary<string, long>();
-            await FileHandler.ProcessFile(fi, wordCounts);
+            await fhc.ProcessFile(fi, wordCounts);
 
             Assert.AreEqual(totalWordCount, wordCounts.Values.Sum());
             Assert.AreEqual(2, wordCounts["DEFINITION"]);

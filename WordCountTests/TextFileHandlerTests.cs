@@ -8,7 +8,7 @@ using WordCountGenerator.Handlers;
 namespace WordCountTests.FileStreamHandlerTests
 {
     [TestClass]
-    public class FileStreamHandlerTests
+    public class TextFileHandlerTests
     {
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
@@ -16,9 +16,10 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\SampleInputFiles\George.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
 
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
         }
 
         [TestMethod]
@@ -27,8 +28,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\FiveWords.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             Assert.AreEqual(FileWordCounts.FiveWordFile, count.Values.Sum());
         }
@@ -39,8 +41,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\FiveHundredWords_LongLines.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             Assert.AreEqual(FileWordCounts.FiveHundredWordFile, count.Values.Sum());
         }
@@ -51,8 +54,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\FiveHundredWords_LineBreaks.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             Assert.AreEqual(FileWordCounts.FiveHundredWordFile, count.Values.Sum());
         }
@@ -63,8 +67,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\George Berkeley - Principles of Human Knowledge.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(39951, count);  // Word Count based on MS Word
             //Assert.AreEqual(36600, count);  // Word Count based on string.Split() over the entire file
@@ -77,8 +82,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\George Berkeley - Three Dialogues.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(39105, count);  // Word Count based on MS Word
             //Assert.AreEqual(36532, count);  // Word Count based on string.Split() over the entire file
@@ -91,8 +97,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\Immanuel Kant - Critique of Pure Reason.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(211731, count);  // Word Count based on MS Word
             //Assert.AreEqual(193392, count);  // Word Count based on string.Split() over the entire file
@@ -105,8 +112,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\Leibniz, Gottfried - Theodicy.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(192328, count);  // Word Count based on MS Word
             //Assert.AreEqual(183062, count);  // Word Count based on string.Split() over the entire file
@@ -119,8 +127,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\Locke, John - Essay Concerning Humane Understanding, Vol 1.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(153324, count);  // Word Count based on MS Word
             //Assert.AreEqual(140548, count);  // Word Count based on string.Split() over the entire file
@@ -133,8 +142,9 @@ namespace WordCountTests.FileStreamHandlerTests
         {
             string inputFile = @".\Locke, John - Essay Concerning Humane Understanding, Vol 2.txt";
 
+            TextFileHandler tfh = new TextFileHandler();
             FileInfo fi = new FileInfo(inputFile);
-            Dictionary<string, long> count = await TextFileHandler.GetWordCount(fi);
+            Dictionary<string, long> count = await tfh.GetWordCount(fi);
 
             //Assert.AreEqual(127959, count);  // Word Count based on MS Word
             //Assert.AreEqual(117320, count);  // Word Count based on string.Split() over the entire file

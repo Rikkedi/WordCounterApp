@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator.Handlers
 {
-    public static class TextFileHandler
+    public class TextFileHandler : IFileHandler
     {
-        public static String TextFileExtension = @".txt";
+        public const string TextFileExtension = @".txt";
         private static char[] StringSeparators = { ' ' };
 
-        public static bool IsHandleable(string file)
+        public bool IsHandleable(string file)
         {
             return file.EndsWith(TextFileHandler.TextFileExtension);
         }
 
-        public static async Task<Dictionary<string, long>> GetWordCount(FileInfo file)
+        public async Task<Dictionary<string, long>> GetWordCount(FileInfo file)
         {
             if (file == null)
             {
@@ -27,7 +27,7 @@ namespace WordCountGenerator.Handlers
                 throw new FileNotFoundException("File {0} does not exist", file.Name);
             }
 
-            if (!TextFileHandler.IsHandleable(file.Name))
+            if (!this.IsHandleable(file.Name))
             {
                 throw new ArgumentException(
                     String.Format(
@@ -40,15 +40,13 @@ namespace WordCountGenerator.Handlers
                 file.FullName, 
                 FileMode.Open, 
                 FileAccess.Read, 
-                FileShare.Read, 
-                bufferSize: 4096, 
-                useAsync: true))
+                FileShare.Read))
             {
-                return await TextFileHandler.GetWordCount(fs);
+                return await this.GetWordCount(fs);
             }
         }
 
-        internal static async Task<Dictionary<string, long>> GetWordCount(Stream textFile)
+        internal async Task<Dictionary<string, long>> GetWordCount(Stream textFile)
         {
             if (textFile == null)
             {
@@ -61,6 +59,8 @@ namespace WordCountGenerator.Handlers
             {
                 while (!file.EndOfStream)
                 {
+                    // TODO - Asynchronously reading one line at a time not going to be efficient in most common cases, due to the
+                    //        added costs of asynchronous operations.  Should move to buffer based reading.
                     string fileBuffer = await file.ReadLineAsync();
 
                     string[] words = fileBuffer.Trim().Split(TextFileHandler.StringSeparators, StringSplitOptions.RemoveEmptyEntries);

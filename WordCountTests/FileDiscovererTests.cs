@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,11 +27,11 @@ namespace WordCountTests.FileDiscovererTests
         public void FileDiscovererTest()
         {
             FileDiscoverer fd = new FileDiscoverer(".");
-            Assert.IsNotNull(fd.FileCountsByWordCount);
+            Assert.IsNotNull(fd.AggregateWordOccurrenceCount);
         }
 
         [TestMethod()]
-        public async Task DiscoverFilesToProcess_FlatFolderTextOnlyTest()
+        public async Task DiscoverAndProcess_FlatFolderTextOnlyTest()
         {
             long totalWordCount =
                 FileWordCounts.FiveWordFile +
@@ -41,16 +44,15 @@ namespace WordCountTests.FileDiscovererTests
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol2;
 
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
-            fd.DiscoverFiles();
-            await fd.ProcessFilesAsync();
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>) fd.DiscoverFiles());
 
-            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
-            Assert.AreEqual(7, fd.FileCountsByWordCount["Lorem"]);
-            Assert.AreEqual(2, fd.FileCountsByWordCount["lorem"]);
+            Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
+            Assert.AreEqual(7, fd.AggregateWordOccurrenceCount["Lorem"]);
+            Assert.AreEqual(2, fd.AggregateWordOccurrenceCount["lorem"]);
         }
 
         [TestMethod()]
-        public async Task DiscoverFilesToProcess_FlatFolderArchivesAndTextTest()
+        public async Task DiscoverAndProcess_FlatFolderArchivesAndTextTest()
         {
             long totalWordCount =
                 FileWordCounts.FiveWordFile +
@@ -63,17 +65,16 @@ namespace WordCountTests.FileDiscovererTests
                 (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
-            fd.DiscoverFiles();
-            await fd.ProcessFilesAsync();
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
 
-            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
-            Assert.AreEqual(7, fd.FileCountsByWordCount["Lorem"]);
-            Assert.AreEqual(2, fd.FileCountsByWordCount["lorem"]);
-            Assert.AreEqual(3, fd.FileCountsByWordCount["ZAHAB?"]);
+            Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
+            Assert.AreEqual(7, fd.AggregateWordOccurrenceCount["Lorem"]);
+            Assert.AreEqual(2, fd.AggregateWordOccurrenceCount["lorem"]);
+            Assert.AreEqual(3, fd.AggregateWordOccurrenceCount["ZAHAB?"]);
         }
 
         [TestMethod()]
-        public async Task DiscoverFilesToProcess_FlatFolderNestedArchivesTest()
+        public async Task DiscoverAndProcess_FlatFolderNestedArchivesTest()
         {
             long totalWordCount =
                 (4 * FileWordCounts.PrinciplesofHumanKnowledge) +
@@ -84,12 +85,75 @@ namespace WordCountTests.FileDiscovererTests
                 (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
             FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
-            fd.DiscoverFiles();
-            await fd.ProcessFilesAsync();
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
 
-            Assert.AreEqual(totalWordCount, fd.FileCountsByWordCount.Values.Sum());
-            Assert.AreEqual(4, fd.FileCountsByWordCount["PRODUCETH."]);
-            Assert.AreEqual(4, fd.FileCountsByWordCount["ZAHAB?"]);
+            Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
+            Assert.AreEqual(4, fd.AggregateWordOccurrenceCount["PRODUCETH."]);
+            Assert.AreEqual(4, fd.AggregateWordOccurrenceCount["ZAHAB?"]);
+        }
+
+        [TestMethod()]
+        public async Task GetCountOfWordsByWordsWithCount_FlatFolderTextOnlyTest()
+        {
+            long totalWordCount =
+                FileWordCounts.FiveWordFile +
+                (2 * FileWordCounts.FiveHundredWordFile) +
+                FileWordCounts.PrinciplesofHumanKnowledge +
+                FileWordCounts.ThreeDialogues +
+                FileWordCounts.CritiqueofPureReason +
+                FileWordCounts.Theodicy +
+                FileWordCounts.EssayConcerningHumaneUnderstandingVol1 +
+                FileWordCounts.EssayConcerningHumaneUnderstandingVol2;
+
+            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+
+            double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
+
+            Assert.AreEqual(totalWordCount, wordCountsFromAggregate);
+        }
+
+        [TestMethod()]
+        public async Task GetCountOfWordsByWordsWithCount_FlatFolderArchivesAndTextTest()
+        {
+            long totalWordCount =
+                FileWordCounts.FiveWordFile +
+                (2 * FileWordCounts.FiveHundredWordFile) +
+                (3 * FileWordCounts.PrinciplesofHumanKnowledge) +
+                (3 * FileWordCounts.ThreeDialogues) +
+                (2 * FileWordCounts.CritiqueofPureReason) +
+                (2 * FileWordCounts.Theodicy) +
+                (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
+                (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
+
+            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+
+            double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
+
+            Assert.AreEqual(totalWordCount, wordCountsFromAggregate);
+        }
+
+        [TestMethod()]
+        public async Task GetCountOfWordsByWordsWithCount_FlatFolderNestedArchivesTest()
+        {
+            long totalWordCount =
+                (4 * FileWordCounts.PrinciplesofHumanKnowledge) +
+                (4 * FileWordCounts.ThreeDialogues) +
+                (1 * FileWordCounts.CritiqueofPureReason) +
+                (1 * FileWordCounts.Theodicy) +
+                (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
+                (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
+
+            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
+            await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+
+            double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
+
+            Assert.AreEqual(totalWordCount, wordCountsFromAggregate);
         }
     }
 }
