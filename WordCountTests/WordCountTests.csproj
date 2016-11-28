@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArchiveFileHandlerTests.cs" />
-    <Compile Include="FileDiscovererTests.cs" />
+    <Compile Include="WordCountDiscovererTests.cs" />
     <Compile Include="FileHandlerTests.cs" />
     <Compile Include="TextFileHandlerTests.cs" />
     <Compile Include="FileWordCounts.cs" />

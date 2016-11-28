@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace WordCountGenerator
 {
-    public class FileDiscoverer
+    public class WordCountDiscoverer
     {
         private DirectoryInfo rootDirectory;
         private const int MaxRetries = 5;
 
         public ConcurrentDictionary<string, long> AggregateWordOccurrenceCount { get; private set; }
 
-        public FileDiscoverer(String path)
+        public WordCountDiscoverer(string path)
         {
             if (String.IsNullOrEmpty(path))
             {
@@ -27,17 +27,25 @@ namespace WordCountGenerator
             {
                 this.rootDirectory = new DirectoryInfo(path);
             }
-            catch (SecurityException)
+            catch (SecurityException se)
             {
                 Console.WriteLine("User does not have permission to access {0}", path);
+                throw se;
             }
-            catch (ArgumentException)
+            catch (ArgumentException ae)
             {
                 Console.WriteLine("Path contains invalid characters");
+                throw ae;
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException pe)
             {
                 Console.WriteLine("Input path too long.");
+                throw pe;
+            }
+
+            if (!this.rootDirectory.Exists)
+            {
+                throw new ArgumentException("Input is not a directory!", "path");
             }
 
             this.AggregateWordOccurrenceCount = new ConcurrentDictionary<string, long>();
@@ -78,7 +86,7 @@ namespace WordCountGenerator
 
             int retries = 0;
 
-            while (subDirectoriesToExplore.Count > 0 && retries < FileDiscoverer.MaxRetries)
+            while (subDirectoriesToExplore.Count > 0 && retries < WordCountDiscoverer.MaxRetries)
             {
                 DirectoryInfo currentDirectory;
                 subDirectoriesToExplore.TryDequeue(out currentDirectory);
@@ -141,19 +149,12 @@ namespace WordCountGenerator
         ///  of words that occur that many times
         /// </summary>
         /// <returns>Enumeration of the number of times a word occurred and how many words occurred that many times</returns>
-        public async Task<IEnumerable<KeyValuePair<long, int>>> GetCountOfWordsByWordsWithCount()
+        public IEnumerable<KeyValuePair<long, int>> GetCountOfWordsByWordsWithCount()
         {
-            /*var foo = from wordOccurrenceCount in this.WordOccurrenceCount
-                      group wordOccurrenceCount by wordOccurrenceCount.Value into occurrencesByWords
-                      orderby occurrencesByWords.Key ascending
-                      select new KeyValuePair<long, int>(occurrencesByWords.Key, occurrencesByWords.Count());*/
-
-            var countWordsByOccurrenceCount = this.AggregateWordOccurrenceCount
+            return this.AggregateWordOccurrenceCount
                 .GroupBy(wordCount => wordCount.Value, wordCount => wordCount.Key)
                 .Select(countPair => new KeyValuePair<long, int>(countPair.Key, countPair.Count()))
                 .OrderBy(countPair => countPair.Key);
-
-            return countWordsByOccurrenceCount;
         }
     }
 }

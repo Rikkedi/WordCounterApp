@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\ArchiveFileHandler.cs" />
-    <Compile Include="FileDiscoverer.cs" />
+    <Compile Include="WordCountDiscoverer.cs" />
     <Compile Include="FileHandlerController.cs" />
     <Compile Include="Handlers\IFileHandler.cs" />
     <Compile Include="Handlers\TextFileHandler.cs" />

@@ -20,13 +20,13 @@ namespace WordCountTests.FileDiscovererTests
         [ExpectedException(typeof(System.ArgumentNullException))]
         public void FileDiscoverer_EmptyInputTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(String.Empty);
+            WordCountDiscoverer fd = new WordCountDiscoverer(String.Empty);
         }
 
         [TestMethod()]
         public void FileDiscovererTest()
         {
-            FileDiscoverer fd = new FileDiscoverer(".");
+            WordCountDiscoverer fd = new WordCountDiscoverer(".");
             Assert.IsNotNull(fd.AggregateWordOccurrenceCount);
         }
 
@@ -43,7 +43,7 @@ namespace WordCountTests.FileDiscovererTests
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol1 +
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol2;
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>) fd.DiscoverFiles());
 
             Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
@@ -64,7 +64,7 @@ namespace WordCountTests.FileDiscovererTests
                 (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
                 (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
 
             Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
@@ -84,7 +84,7 @@ namespace WordCountTests.FileDiscovererTests
                 (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
                 (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
 
             Assert.AreEqual(totalWordCount, fd.AggregateWordOccurrenceCount.Values.Sum());
@@ -105,9 +105,9 @@ namespace WordCountTests.FileDiscovererTests
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol1 +
                 FileWordCounts.EssayConcerningHumaneUnderstandingVol2;
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderTextFilesOnly);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
-            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = fd.GetCountOfWordsByWordsWithCount();
 
             double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
 
@@ -127,9 +127,9 @@ namespace WordCountTests.FileDiscovererTests
                 (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
                 (3 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderTextAndArchives);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
-            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = fd.GetCountOfWordsByWordsWithCount();
 
             double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
 
@@ -147,9 +147,9 @@ namespace WordCountTests.FileDiscovererTests
                 (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol1) +
                 (4 * FileWordCounts.EssayConcerningHumaneUnderstandingVol2);
 
-            FileDiscoverer fd = new FileDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
+            WordCountDiscoverer fd = new WordCountDiscoverer(FileDiscovererTests.FlatFolderNestedArchives);
             await fd.ProcessFilesAsync((ConcurrentQueue<FileInfo>)fd.DiscoverFiles());
-            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = await fd.GetCountOfWordsByWordsWithCount();
+            IEnumerable<KeyValuePair<long, int>> countOfWordsByWordsWithCount = fd.GetCountOfWordsByWordsWithCount();
 
             double wordCountsFromAggregate = countOfWordsByWordsWithCount.Sum(e => (e.Key * e.Value));
 
