@@ -16,9 +16,9 @@ namespace WordCountGenerator.Handlers
             this.textFileHandler = new TextFileHandler();
         }
 
-        // If we need to support multiple subtypes in archives, switch to take IFileHandler 
-        // then do a sequential 'try-cast' for the different handler types.  Can also extend 
-        // to take multiple IFileHandlers.
+        // TODO - If we need to support multiple subtypes in archives, switch to take IFileHandler 
+        // then do a sequence of 'if is' and/or 'as' for the different handler types.  Can also 
+        // extend to take multiple IFileHandlers.
         public ArchiveFileHandler(TextFileHandler subFileHandler)
         {
             this.textFileHandler = subFileHandler;

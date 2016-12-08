@@ -49,6 +49,11 @@ namespace WordCountGenerator
             }
 
             this.AggregateWordOccurrenceCount = new ConcurrentDictionary<string, long>();
+
+            if (this.AggregateWordOccurrenceCount == null)
+            {
+                throw new NullReferenceException("Out of memory");
+            }
         }
 
         public IEnumerable<FileInfo> DiscoverFiles()
@@ -103,6 +108,11 @@ namespace WordCountGenerator
                 {
                     Parallel.ForEach<FileInfo>(currentDirectory.EnumerateFiles(), (currentFile) =>
                     {
+                        // TODO - Reduce data set size by filtering on .txt and .zip pre-Enqueue
+                        //  Would want to give the FileHandler class-wide scope instead of putting it
+                        //  local to ProcessFileAsync
+                        //  Then give it a public method for 'ShouldInclude(file)' or similar that checks
+                        //  the file name against types covered by the Handlers
                         concurrentFileQueue.Enqueue(currentFile);
                     });
                 
@@ -128,8 +138,11 @@ namespace WordCountGenerator
                 return;
             }
 
+            // TODO - See 'TODO' above.  Should move this up to class-wide scope and new it in constructor
             FileHandlerController fileHandler = new FileHandlerController();
 
+            // TODO - This needs to be made parallel.  Wrap it in a private method that can be called from 
+            // multiple threads.  Otherwise, why use a ConcurrentDictionary for word count?
             while (!fileQueue.IsEmpty)
             {
                 FileInfo currentFile;
@@ -139,6 +152,7 @@ namespace WordCountGenerator
                 }
                 else
                 {
+                    // TODO - Verify if this does what you think it is meant to do
                     await Task.Run(() => Thread.Sleep(10)); 
                 }
             }
